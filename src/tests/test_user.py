@@ -1,35 +1,34 @@
+import os
+from dotenv import load_dotenv, find_dotenv
 import requests
 import pytest
+from src.config import TEST_USER_PAYLOAD, TEST_USER_PAYLOAD_2
+
+
+load_dotenv(find_dotenv())
+
+url_test_user = os.getenv("URL_TEST_USER")
+# test_user_payload = os.getenv("TEST_USER_PAYLOAD")
 
 
 @pytest.fixture()
 def obj_id():
-    payload = {
-        "email": "Dallaso@mail.com",
-        "password": "asdfg",
-    }
-    response = requests.post("http://127.0.0.1:8000/v1/users", json=payload).json()
+    response = requests.post(url_test_user, json=TEST_USER_PAYLOAD).json()
     yield response["id"]
-    requests.delete(f"http://127.0.0.1:8000/v1/users/{response["id"]}")
+    requests.delete(f"{url_test_user}/{response["id"]}")
 
 
 def test_create_object(obj_id):
-    payload = {
-        "email": "Jumbo@mail.com",
-        "password": "zxcv",
-    } 
-    response = requests.post("http://127.0.0.1:8000/v1/users", json=payload).json()
-    assert response["email"] == payload["email"]
-    requests.delete(f"http://127.0.0.1:8000/v1/users/{response["id"]}")
+    response = requests.post(url_test_user, json=TEST_USER_PAYLOAD_2).json()
+    assert response["email"] == TEST_USER_PAYLOAD_2["email"]
+    requests.delete(f"{url_test_user}/{response["id"]}")
 
 
 def test_get_list_of_users():
-    url = "http://127.0.0.1:8000/v1/users"
-    response = requests.get(url)
+    response = requests.get(url_test_user)
     assert response.status_code == 200
 
 
 def test_get_object(obj_id):
-    # print(obj_id)
-    response = requests.get(f"http://127.0.0.1:8000/v1/users/{obj_id}").json()
+    response = requests.get(f"{url_test_user}/{obj_id}").json()
     assert response["id"] == obj_id
