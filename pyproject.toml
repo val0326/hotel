@@ -1,19 +1,24 @@
-[tool.poetry]
-package-mode = false
-name = "binance"
+[project]
+name = "Hoteler"
 version = "0.1.0"
 description = ""
-authors = ["Valery Shcherbakov <val032606@gmail.com>"]
 readme = "README.md"
+authors = [
+    { name = "Valery Shcherbakov", email = "val0326@mail.ru" }
+]
+requires-python = ">=3.10"
 
-[tool.poetry.dependencies]
-python = "^3.10"
-fastapi = "^0.112.0"
-uvicorn = {extras = ["standard"], version = "^0.30.5"}
-pydantic-settings = "^2.4.0"
-sqlalchemy = "^2.0.32"
-alembic = "^1.13.3"
+# Исправленный блок зависимостей
+dependencies = [
+    "fastapi>=0.112.0",
+    "uvicorn[standard]>=0.30.5",
+    "pydantic-settings>=2.4.0",
+    "sqlalchemy>=2.0.32",
+    "alembic>=1.13.3"
+]
 
+[tool.poetry]
+package-mode = false
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"

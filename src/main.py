@@ -5,6 +5,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from routers import router
 from config import settings
 
+from init_db import init_db
+
+
+
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -12,6 +16,10 @@ app = FastAPI(
     debug=settings.DEBUG,
 )
 
+
+@app.on_event("startup")
+def on_startup():
+    init_db()
 
 app.add_middleware(
     CORSMiddleware,
