@@ -1,27 +1,38 @@
-import os
+from contextlib import contextmanager
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
-
-
-load_dotenv()
-
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
-# SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
+from sqlalchemy.orm import sessionmaker, Session
+from config import settings
 
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+    settings.DATABASE_URL,
+    pool_pre_ping=True,
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-session = SessionLocal()
-
 Base = declarative_base()
 
 
-metadata = Base.metadata
+def get_db_session() -> Session:
+    """Создаёт новую сессию БД."""
+    return SessionLocal()
 
 
-metadata.create_all(engine)
+@contextmanager
+def get_db_context():
+    """Контекстный менеджер для безопасной работы с сессией."""
+    db = SessionLocal()
+    try:
+        yield db
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        db.close()
+
+
+def create_tables():
+    """Создаёт все таблицы, если они не существуют."""
+    Base.metadata.create_all(bind=engine)
