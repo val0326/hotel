@@ -1,7 +1,14 @@
 {
   "permissions": {
     "allow": [
-      "Bash(poetry *)"
+      "Bash(poetry *)",
+      "Bash(curl *)",
+      "Bash(timeout *)",
+      "Bash(powershell *)",
+      "Bash(taskkill *)",
+      "Bash(netstat *)",
+      "Bash(findstr *)"
     ]
-  }
+  },
+  "$version": 3
 }

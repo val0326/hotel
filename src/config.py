@@ -1,14 +1,9 @@
+from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-
-TEST_USER_PAYLOAD = {
-    "email": "Dallaso@mail.com",
-    "password": "asdfg",
-}
-TEST_USER_PAYLOAD_2 = {
-    "email": "Jumbo@mail.com",
-    "password": "zxcv",
-}
+# Определяем путь к корню проекта (на два уровня выше config.py)
+BASE_DIR = Path(__file__).resolve().parent.parent
+ENV_FILE = BASE_DIR / ".env"
 
 
 class Settings(BaseSettings):
@@ -22,7 +17,7 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(
         case_sensitive=False,
-        env_file=".env",
+        env_file=str(ENV_FILE),
         extra="allow",
     )
 

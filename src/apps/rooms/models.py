@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Float, Boolean, Enum
+from sqlalchemy.orm import relationship
 import enum
 
 from database import Base
@@ -29,3 +30,6 @@ class Room(Base):
     description = Column(String, nullable=True)
     is_available = Column(Boolean, default=True)
     status = Column(Enum(RoomStatus), default=RoomStatus.AVAILABLE)
+
+    # Relationship с бронированиями
+    bookings = relationship("Booking", back_populates="room")
