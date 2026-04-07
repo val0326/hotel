@@ -13,8 +13,13 @@ dependencies = [
     "fastapi>=0.112.0",
     "uvicorn[standard]>=0.30.5",
     "pydantic-settings>=2.4.0",
+    "pydantic[email]>=2.4.0",
     "sqlalchemy>=2.0.32",
-    "alembic>=1.13.3"
+    "alembic>=1.13.3",
+    "python-dotenv>=1.0.1",
+    "passlib[bcrypt]>=1.7.4",
+    "bcrypt==4.0.1",
+    "psycopg2-binary>=2.9.9",
 ]
 
 [tool.poetry]
