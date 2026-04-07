@@ -1,4 +1,3 @@
-# Dependency
 from database import SessionLocal
 
 
