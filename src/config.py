@@ -23,3 +23,14 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+# Test fixtures constants
+TEST_USER_PAYLOAD = {
+    "email": "test@example.com",
+    "password": "string123",
+}
+
+TEST_USER_PAYLOAD_2 = {
+    "email": "test2@example.com",
+    "password": "string456",
+}

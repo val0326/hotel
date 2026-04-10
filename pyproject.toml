@@ -27,6 +27,7 @@ package-mode = false
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
+requests = "^2.31.0"
 
 [build-system]
 requires = ["poetry-core"]

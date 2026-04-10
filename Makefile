@@ -9,16 +9,16 @@ export PATH:=${PWD}/venv/bin:${PATH}
 default: migrate init_db
 
 generate_migration:
-@ alembic revision --autogenerate
+	@ alembic revision --autogenerate
 
 migrate:
-@ alembic upgrade head
+	@ alembic upgrade head
 
 test:
-@ pytest -v tests
+	@ pytest -v src/tests
 
 init_db:
-@ python fastapp/scripts/initialise.py ## src/database.py??
+	@ python -m src.init_db
 
 
 vim:ft=make

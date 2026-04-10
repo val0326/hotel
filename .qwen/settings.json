@@ -9,7 +9,8 @@
       "Bash(netstat *)",
       "Bash(findstr *)",
       "Bash(.venv\\scripts\\python *)",
-      "Bash(del *)"
+      "Bash(del *)",
+      "Bash(.venv\\scripts\\pip *)"
     ]
   },
   "$version": 3
