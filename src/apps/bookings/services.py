@@ -52,16 +52,22 @@ def create_booking(db: Session, booking: schemas.BookingCreate):
     if not user:
         raise ValueError("Пользователь не найден")
 
-    # Проверяем существование номера
-    room = db.query(Room).filter(Room.id == booking.room_id).first()
+    # Блокируем строку комнаты для предотвращения race condition
+    room = (
+        db.query(Room)
+        .filter(Room.id == booking.room_id)
+        .with_for_update()  # SELECT FOR UPDATE - блокировка строки
+        .first()
+    )
     if not room:
         raise ValueError("Номер не найден")
 
     # Проверяем доступность номера
-    if not room.is_available:
+    if not room.is_available or room.status != RoomStatus.AVAILABLE:
         raise ValueError("Номер недоступен")
 
     # Проверяем, нет ли пересечений с другими бронированиями
+    # (после блокировки строки — это атомарная операция)
     if not is_room_available(db, booking.room_id, booking.check_in, booking.check_out):
         raise ValueError("Номер уже забронирован на выбранные даты")
 
@@ -74,8 +80,14 @@ def create_booking(db: Session, booking: schemas.BookingCreate):
         check_in=booking.check_in,
         check_out=booking.check_out,
         total_price=total_price,
+        status=models.BookingStatus.CONFIRMED,
     )
     db.add(db_booking)
+    
+    # Обновляем статус комнаты
+    room.is_available = False
+    room.status = RoomStatus.OCCUPIED
+    
     db.commit()
     db.refresh(db_booking)
     return db_booking
@@ -98,7 +110,37 @@ def cancel_booking(db: Session, booking_id: int):
     db_booking = db.query(models.Booking).filter(models.Booking.id == booking_id).first()
     if not db_booking:
         return None
+    
+    # Проверяем, можно ли отменить (нельзя отменить уже отменённое или завершённое)
+    if db_booking.status in [models.BookingStatus.CANCELLED, models.BookingStatus.COMPLETED]:
+        raise ValueError("Нельзя отменить это бронирование")
+    
+    old_status = db_booking.status
     db_booking.status = models.BookingStatus.CANCELLED
+    
+    # Если бронирование было активным, восстанавливаем доступность комнаты
+    if old_status in [models.BookingStatus.CONFIRMED, models.BookingStatus.PENDING]:
+        room = (
+            db.query(Room)
+            .filter(Room.id == db_booking.room_id)
+            .with_for_update()
+            .first()
+        )
+        if room:
+            # Проверяем, есть ли другие активные бронирования для этой комнаты
+            has_other_active = (
+                db.query(models.Booking)
+                .filter(
+                    models.Booking.room_id == db_booking.room_id,
+                    models.Booking.id != db_booking.id,
+                    models.Booking.status.in_([models.BookingStatus.CONFIRMED, models.BookingStatus.PENDING]),
+                )
+                .first()
+            )
+            if not has_other_active:
+                room.is_available = True
+                room.status = RoomStatus.AVAILABLE
+    
     db.commit()
     db.refresh(db_booking)
     return db_booking
@@ -108,6 +150,30 @@ def delete_booking(db: Session, booking_id: int):
     db_booking = db.query(models.Booking).filter(models.Booking.id == booking_id).first()
     if not db_booking:
         return None
+    
+    # Если бронирование активное, восстанавливаем доступность комнаты
+    if db_booking.status in [models.BookingStatus.CONFIRMED, models.BookingStatus.PENDING]:
+        room = (
+            db.query(Room)
+            .filter(Room.id == db_booking.room_id)
+            .with_for_update()
+            .first()
+        )
+        if room:
+            # Проверяем, есть ли другие активные бронирования
+            has_other_active = (
+                db.query(models.Booking)
+                .filter(
+                    models.Booking.room_id == db_booking.room_id,
+                    models.Booking.id != db_booking.id,
+                    models.Booking.status.in_([models.BookingStatus.CONFIRMED, models.BookingStatus.PENDING]),
+                )
+                .first()
+            )
+            if not has_other_active:
+                room.is_available = True
+                room.status = RoomStatus.AVAILABLE
+    
     db.delete(db_booking)
     db.commit()
     return db_booking

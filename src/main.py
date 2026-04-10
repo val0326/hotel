@@ -4,14 +4,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.config import settings
-from src.database import create_tables
 from src.routers import router
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
-    create_tables()
+    # Startup (таблицы создаются через Alembic миграции)
     yield
     # Shutdown (если потребуется)
 

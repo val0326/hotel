@@ -12,5 +12,5 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
 
-    # Relationship с бронированиями
-    bookings = relationship("Booking", back_populates="user")
+    # Relationship с бронированиями (cascade для удаления связанных записей)
+    bookings = relationship("Booking", back_populates="user", cascade="all, delete-orphan")

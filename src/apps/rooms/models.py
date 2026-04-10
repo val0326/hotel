@@ -31,5 +31,5 @@ class Room(Base):
     is_available = Column(Boolean, default=True)
     status = Column(Enum(RoomStatus), default=RoomStatus.AVAILABLE)
 
-    # Relationship с бронированиями
-    bookings = relationship("Booking", back_populates="room")
+    # Relationship с бронированиями (cascade для удаления связанных записей)
+    bookings = relationship("Booking", back_populates="room", cascade="all, delete-orphan")
