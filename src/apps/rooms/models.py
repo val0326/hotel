@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Float, Boolean, Enum
 from sqlalchemy.orm import relationship
 import enum
 
-from database import Base
+from src.database import Base
 
 
 class RoomType(str, enum.Enum):

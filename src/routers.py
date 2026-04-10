@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 
-from apps.users.routers import router as user_router
-from apps.rooms.routers import router as room_router
-from apps.bookings.routers import router as booking_router
+from src.apps.users.routers import router as user_router
+from src.apps.rooms.routers import router as room_router
+from src.apps.bookings.routers import router as booking_router
 
 router = APIRouter()
 

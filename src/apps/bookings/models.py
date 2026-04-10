@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 import enum
 from datetime import datetime
 
-from database import Base
+from src.database import Base
 
 
 class BookingStatus(str, enum.Enum):

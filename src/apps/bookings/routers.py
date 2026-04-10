@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from datetime import datetime
 
-import dependencies
+from src import dependencies
 from . import schemas, services
 from .models import BookingStatus
 

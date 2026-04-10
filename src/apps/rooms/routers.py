@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
-import dependencies
+from src import dependencies
 from . import schemas, services
 from .models import RoomType
 

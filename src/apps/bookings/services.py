@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from datetime import datetime
 
-from apps.rooms.models import Room, RoomStatus
-from apps.users.models import User
+from src.apps.rooms.models import Room, RoomStatus
+from src.apps.users.models import User
 from . import models, schemas
 
 
