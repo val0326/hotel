@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     API_PREFIX: str
     DATABASE_URL: str
     URL_TEST_USER: str
+    JWT_SECRET_KEY: str = "your-secret-key-change-in-production"
+    JWT_ALGORITHM: str = "HS256"
+    JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 часа
 
     model_config = SettingsConfigDict(
         case_sensitive=False,
