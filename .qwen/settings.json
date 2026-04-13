@@ -10,7 +10,10 @@
       "Bash(findstr *)",
       "Bash(.venv\\scripts\\python *)",
       "Bash(del *)",
-      "Bash(.venv\\scripts\\pip *)"
+      "Bash(.venv\\scripts\\pip *)",
+      "Bash(npm install)",
+      "Bash(npx *)",
+      "Bash(npm run *)"
     ]
   },
   "$version": 3
