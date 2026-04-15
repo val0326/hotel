@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { login as apiLogin, register as apiRegister } from '@/shared/api/auth';
+import { login as apiLogin, register as apiRegister, getCurrentUser as apiGetCurrentUser } from '@/shared/api/auth';
 import type { User } from '@/shared/types';
 
 interface AuthState {
@@ -25,7 +25,9 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       const response = await apiLogin(email, password);
       localStorage.setItem('token', response.access_token);
+      const user = await apiGetCurrentUser();
       set({
+        user,
         token: response.access_token,
         isAuthenticated: true,
         isLoading: false,
@@ -39,8 +41,15 @@ export const useAuthStore = create<AuthState>((set) => ({
   register: async (email: string, password: string) => {
     set({ isLoading: true });
     try {
-      const user = await apiRegister(email, password);
-      set({ user, isLoading: false });
+      const userWithToken = await apiRegister(email, password);
+      localStorage.setItem('token', userWithToken.access_token);
+      const user = await apiGetCurrentUser();
+      set({
+        user,
+        token: userWithToken.access_token,
+        isAuthenticated: true,
+        isLoading: false,
+      });
     } catch (error) {
       set({ isLoading: false });
       throw error;

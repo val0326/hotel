@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from datetime import datetime
 
 from src.apps.rooms.models import Room, RoomStatus
@@ -7,7 +7,7 @@ from . import models, schemas
 
 
 def get_booking(db: Session, booking_id: int):
-    return db.query(models.Booking).filter(models.Booking.id == booking_id).first()
+    return db.query(models.Booking).options(joinedload(models.Booking.room)).filter(models.Booking.id == booking_id).first()
 
 
 def get_bookings(
@@ -17,8 +17,8 @@ def get_bookings(
     user_id: int | None = None,
     status: models.BookingStatus | None = None,
 ):
-    query = db.query(models.Booking)
-    if user_id:
+    query = db.query(models.Booking).options(joinedload(models.Booking.room))
+    if user_id is not None:
         query = query.filter(models.Booking.user_id == user_id)
     if status:
         query = query.filter(models.Booking.status == status)

@@ -1,6 +1,7 @@
 from pydantic import BaseModel, field_validator, ConfigDict
 from datetime import datetime
 from .models import BookingStatus
+from src.apps.rooms.schemas import Room
 
 
 class BookingBase(BaseModel):
@@ -39,5 +40,6 @@ class Booking(BookingBase):
     total_price: float
     status: BookingStatus
     created_at: datetime
+    room: Room
 
     model_config = ConfigDict(from_attributes=True)

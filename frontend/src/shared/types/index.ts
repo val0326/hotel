@@ -41,6 +41,11 @@ export interface AuthResponse {
   token_type: string;
 }
 
+export interface UserWithToken extends User {
+  access_token: string;
+  token_type: string;
+}
+
 export interface ApiError {
   detail: string | { msg: string }[];
 }

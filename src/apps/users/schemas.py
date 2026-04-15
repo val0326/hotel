@@ -34,3 +34,8 @@ class User(UserBase):
 
     class Config:
         from_attributes = True
+
+
+class UserWithToken(User):
+    access_token: str
+    token_type: str

@@ -2,17 +2,36 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from src import dependencies
+from src.auth import get_current_active_user
+from src.apps.users import models as user_models
 from . import schemas, services
 
 router = APIRouter()
 
 
-@router.post("/", response_model=schemas.User, tags=["users"])
+@router.get("/me", response_model=schemas.User, tags=["users"])
+def read_current_user(current_user: user_models.User = Depends(get_current_active_user)):
+    """
+    Получить текущего аутентифицированного пользователя.
+    """
+    return current_user
+
+
+@router.post("/", response_model=schemas.UserWithToken, tags=["users"])
 def create_user(user: schemas.UserCreate, db: Session = Depends(dependencies.get_db)):
     db_user = services.get_user_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email уже зарегистрирован")
-    return services.create_user(db=db, user=user)
+    created_user = services.create_user(db=db, user=user)
+    # Создаём токен для автоматического входа
+    access_token = create_access_token(data={"sub": str(created_user.id)})
+    return {
+        "id": created_user.id,
+        "email": created_user.email,
+        "is_active": created_user.is_active,
+        "access_token": access_token,
+        "token_type": "bearer",
+    }
 
 
 @router.get("/", response_model=list[schemas.User], tags=["users"])

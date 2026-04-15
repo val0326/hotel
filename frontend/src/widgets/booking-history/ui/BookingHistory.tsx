@@ -14,8 +14,10 @@ export function BookingHistory() {
     try {
       const data = await getBookings();
       setBookings(data);
-    } catch {
-      // Handle error silently
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Не удалось загрузить бронирования';
+      toast.error(message);
+      setBookings([]);
     } finally {
       setIsLoading(false);
     }
